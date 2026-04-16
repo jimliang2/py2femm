@@ -235,47 +235,49 @@ class FemmBackend:
 
         # --- Draw core outline ---
         # Bottom plate
-        pts_core = [
-            (0, 0), (total_w, 0), (total_w, ch),
-            (cw + ww, ch), (cw, ch),  (0, ch),
-            # Top plate
-            (0, ch + wh), (cw, ch + wh), (cw + ww, ch + wh),
-            (total_w, ch + wh), (total_w, total_h), (0, total_h),
-        ]
-        # Bottom plate outline
         f.mi_addnode(0, 0); f.mi_addnode(total_w, 0)
         f.mi_addnode(total_w, ch); f.mi_addnode(0, ch)
+        f.mi_addnode(cw, ch); f.mi_addnode(cw + ww, ch)
         f.mi_addsegment(0, 0, total_w, 0)
         f.mi_addsegment(total_w, 0, total_w, ch)
         f.mi_addsegment(total_w, ch, cw + ww, ch)
+        f.mi_addsegment(cw + ww, ch, cw, ch)       # ← window bottom edge
         f.mi_addsegment(cw, ch, 0, ch)
         f.mi_addsegment(0, ch, 0, 0)
 
-        # Top plate outline
+        # Top plate
         f.mi_addnode(0, ch + wh); f.mi_addnode(cw, ch + wh)
         f.mi_addnode(cw + ww, ch + wh); f.mi_addnode(total_w, ch + wh)
         f.mi_addnode(total_w, total_h); f.mi_addnode(0, total_h)
         f.mi_addsegment(0, ch + wh, cw, ch + wh)
+        f.mi_addsegment(cw, ch + wh, cw + ww, ch + wh)  # ← window top edge
         f.mi_addsegment(cw + ww, ch + wh, total_w, ch + wh)
         f.mi_addsegment(total_w, ch + wh, total_w, total_h)
         f.mi_addsegment(total_w, total_h, 0, total_h)
         f.mi_addsegment(0, total_h, 0, ch + wh)
 
-        # Center leg (right side: x=0..cw)
-        f.mi_addnode(cw, ch); f.mi_addnode(cw, ch + wh)
-        f.mi_addsegment(cw, ch, cw, ch + wh)
+        # Center leg walls
+        f.mi_addsegment(cw, ch, cw, ch + wh)          # inner wall
+        f.mi_addsegment(0, ch, 0, ch + wh)            # outer wall (left edge)
 
-        # Outer leg (x=cw+ww..total_w)
-        f.mi_addnode(cw + ww, ch); f.mi_addnode(cw + ww, ch + wh)
-        f.mi_addsegment(cw + ww, ch, cw + ww, ch + wh)
+        # Outer leg walls
+        f.mi_addsegment(cw + ww, ch, cw + ww, ch + wh)  # inner wall
+        f.mi_addsegment(total_w, ch, total_w, ch + wh)   # outer wall (right edge)
 
-        # --- Winding regions ---
-        # Primary: in window, left half
-        pw = (ww - insul) / 2  # primary winding width
-        px0 = cw + insul / 4
-        px1 = px0 + pw - insul / 4
-        py0 = ch + insul / 2
-        py1 = ch + wh - insul / 2
+        # --- Winding regions (symmetric insulation layout) ---
+        gap = insul  # uniform gap to core walls and between windings
+        pw = (ww - 3 * gap) / 2  # winding width each
+        if pw < 0.1:
+            pw = ww * 0.3  # fallback if window too narrow
+            gap = (ww - 2 * pw) / 3
+        px0 = cw + gap
+        px1 = px0 + pw
+        sx0 = px1 + gap
+        sx1 = sx0 + pw
+        py0 = ch + gap
+        py1 = ch + wh - gap
+
+        # Primary winding rectangle
         f.mi_addnode(px0, py0); f.mi_addnode(px1, py0)
         f.mi_addnode(px1, py1); f.mi_addnode(px0, py1)
         f.mi_addsegment(px0, py0, px1, py0)
@@ -283,9 +285,7 @@ class FemmBackend:
         f.mi_addsegment(px1, py1, px0, py1)
         f.mi_addsegment(px0, py1, px0, py0)
 
-        # Secondary: in window, right half
-        sx0 = px1 + insul / 2
-        sx1 = cw + ww - insul / 4
+        # Secondary winding rectangle
         f.mi_addnode(sx0, py0); f.mi_addnode(sx1, py0)
         f.mi_addnode(sx1, py1); f.mi_addnode(sx0, py1)
         f.mi_addsegment(sx0, py0, sx1, py0)
@@ -370,10 +370,12 @@ class FemmBackend:
         f.mi_setblockprop(wind_mat, 0, 0, "secondary", 0, 0, n_sec)
         f.mi_clearselected()
 
-        # Air (window gap between windings)
-        air_x = (px1 + sx0) / 2; air_y = (py0 + py1) / 2
-        f.mi_addblocklabel(air_x, air_y)
-        f.mi_selectlabel(air_x, air_y)
+        # Air — window region (between windings and core walls)
+        # Place label at the center-bottom gap (between window bottom and winding bottom)
+        air_win_x = (px0 + sx1) / 2
+        air_win_y = ch + gap / 2  # halfway in bottom gap
+        f.mi_addblocklabel(air_win_x, air_win_y)
+        f.mi_selectlabel(air_win_x, air_win_y)
         f.mi_setblockprop("Air", 0, 0, "", 0, 0, 0)
         f.mi_clearselected()
 
