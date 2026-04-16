@@ -1,0 +1,320 @@
+{
+  "format_version": "2.0",
+  "description": "py2femm-compatible material database. Each entry maps to FEMM mi_addmaterial / BH curves.",
+  "categories": {
+    "軟磁材料 Soft Magnetic": {
+      "M-19 Steel (0.36mm)": {
+        "mu_x": 2000, "mu_y": 2000, "H_c": 0, "J": 0, "Sigma": 1.9,
+        "Lam_d": 0.36, "lam_fill": 0.95, "LamType": 1,
+        "Phi_hmax": 0, "Phi_hx": 0, "Phi_hy": 0, "NStrands": 0, "WireD": 0,
+        "rho": 7650,
+        "bh_b": [0, 0.2, 0.4, 0.6, 0.8, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9],
+        "bh_h": [0, 18, 28, 36, 47, 68, 86, 115, 170, 290, 600, 1500, 4000, 10000, 30000],
+        "note": "常用矽鋼片 Common Si-steel lamination"
+      },
+      "M-36 Steel (0.47mm)": {
+        "mu_x": 4000, "mu_y": 4000, "H_c": 0, "J": 0, "Sigma": 2.0,
+        "Lam_d": 0.47, "lam_fill": 0.95, "LamType": 1,
+        "rho": 7650, "note": "較厚矽鋼片"
+      },
+      "M-45 Steel (0.64mm)": {
+        "mu_x": 3500, "mu_y": 3500, "H_c": 0, "J": 0, "Sigma": 2.1,
+        "Lam_d": 0.64, "lam_fill": 0.95, "LamType": 1,
+        "rho": 7700, "note": "經濟型矽鋼片"
+      },
+      "Silicon Steel 3% Si": {
+        "mu_x": 5000, "mu_y": 5000, "H_c": 0, "J": 0, "Sigma": 1.0,
+        "Lam_d": 0.35, "lam_fill": 0.97, "LamType": 1,
+        "rho": 7700, "note": "3% 矽含量取向矽鋼"
+      },
+      "HiB Grain-Oriented Si-Steel": {
+        "mu_x": 30000, "mu_y": 30000, "H_c": 0, "J": 0, "Sigma": 2.0,
+        "Lam_d": 0.27, "lam_fill": 0.97, "LamType": 1,
+        "rho": 7650, "note": "高導磁取向矽鋼"
+      },
+      "3C90 Ferrite (MnZn)": {
+        "mu_x": 2300, "mu_y": 2300, "H_c": 0, "J": 0, "Sigma": 2e-7,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 4800,
+        "bh_b": [0, 0.1, 0.2, 0.3, 0.35, 0.39, 0.42, 0.45, 0.47],
+        "bh_h": [0, 35, 70, 120, 180, 300, 500, 1000, 2000],
+        "note": "功率鐵氧體 Power ferrite, 25-200kHz"
+      },
+      "3C95 Ferrite (MnZn)": {
+        "mu_x": 3000, "mu_y": 3000, "H_c": 0, "J": 0, "Sigma": 2e-7,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 4800, "note": "高頻功率鐵氧體 100-500kHz"
+      },
+      "3F3 Ferrite (MnZn)": {
+        "mu_x": 2000, "mu_y": 2000, "H_c": 0, "J": 0, "Sigma": 1e-7,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 4700, "note": "高頻低損耗 MnZn 鐵氧體"
+      },
+      "3F4 Ferrite (MnZn)": {
+        "mu_x": 900, "mu_y": 900, "H_c": 0, "J": 0, "Sigma": 1e-7,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 4700, "note": "1-2MHz 鐵氧體"
+      },
+      "4C65 Ferrite (NiZn)": {
+        "mu_x": 125, "mu_y": 125, "H_c": 0, "J": 0, "Sigma": 1e-10,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 4500, "note": "NiZn 高頻鐵氧體 >1MHz"
+      },
+      "N87 Ferrite (TDK)": {
+        "mu_x": 2200, "mu_y": 2200, "H_c": 0, "J": 0, "Sigma": 2e-7,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 4850,
+        "bh_b": [0, 0.1, 0.2, 0.3, 0.35, 0.39, 0.42, 0.45, 0.49],
+        "bh_h": [0, 36, 72, 130, 200, 350, 600, 1200, 3000],
+        "note": "TDK 功率鐵氧體 25-500kHz"
+      },
+      "N97 Ferrite (TDK)": {
+        "mu_x": 2300, "mu_y": 2300, "H_c": 0, "J": 0, "Sigma": 1e-7,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 4850, "note": "TDK 高效鐵氧體"
+      },
+      "PC40 Ferrite (TDK)": {
+        "mu_x": 2300, "mu_y": 2300, "H_c": 0, "J": 0, "Sigma": 2e-7,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 4800, "note": "TDK PC40 功率級"
+      },
+      "Amorphous 2605SA1": {
+        "mu_x": 45000, "mu_y": 45000, "H_c": 3.2, "J": 0, "Sigma": 0.77,
+        "Lam_d": 0.025, "lam_fill": 0.85, "LamType": 1,
+        "rho": 7180, "note": "Metglas 非晶合金"
+      },
+      "Nanocrystalline Vitroperm 500F": {
+        "mu_x": 80000, "mu_y": 80000, "H_c": 1.0, "J": 0, "Sigma": 0.83,
+        "Lam_d": 0.020, "lam_fill": 0.80, "LamType": 1,
+        "rho": 7350, "note": "奈米晶帶材 高μ"
+      },
+      "Permalloy (80Ni-20Fe)": {
+        "mu_x": 100000, "mu_y": 100000, "H_c": 0.4, "J": 0, "Sigma": 1.7,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 8740, "note": "高磁導率合金"
+      },
+      "Mumetal": {
+        "mu_x": 80000, "mu_y": 80000, "H_c": 0.4, "J": 0, "Sigma": 1.6,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 8750, "note": "磁屏蔽用高μ合金"
+      },
+      "Iron Powder -26 (Micrometals)": {
+        "mu_x": 75, "mu_y": 75, "H_c": 0, "J": 0, "Sigma": 1e-4,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 6900, "note": "鐵粉芯 分佈氣隙"
+      },
+      "Iron Powder -52 (Micrometals)": {
+        "mu_x": 75, "mu_y": 75, "H_c": 0, "J": 0, "Sigma": 1e-4,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 6400, "note": "高頻鐵粉芯"
+      },
+      "MPP Core (Magnetics Inc)": {
+        "mu_x": 60, "mu_y": 60, "H_c": 0, "J": 0, "Sigma": 5e-5,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 7600, "note": "MPP 粉末芯 低損耗"
+      },
+      "Sendust (KoolMu)": {
+        "mu_x": 60, "mu_y": 60, "H_c": 0, "J": 0, "Sigma": 0.5,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 7000, "note": "仙達斯特合金粉芯"
+      },
+      "Pure Iron (99.9%)": {
+        "mu_x": 5000, "mu_y": 5000, "H_c": 80, "J": 0, "Sigma": 10.0,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 7874, "note": "純鐵"
+      },
+      "Cast Iron": {
+        "mu_x": 200, "mu_y": 200, "H_c": 0, "J": 0, "Sigma": 1.0,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 7200, "note": "鑄鐵"
+      },
+      "Low Carbon Steel 1010": {
+        "mu_x": 2000, "mu_y": 2000, "H_c": 0, "J": 0, "Sigma": 5.0,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 7870, "note": "低碳鋼"
+      },
+      "Low Carbon Steel 1018": {
+        "mu_x": 1500, "mu_y": 1500, "H_c": 0, "J": 0, "Sigma": 5.8,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 7870, "note": "低碳鋼 1018"
+      },
+      "Stainless Steel 304": {
+        "mu_x": 1.02, "mu_y": 1.02, "H_c": 0, "J": 0, "Sigma": 1.4,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 8000, "note": "非磁性不銹鋼"
+      },
+      "Stainless Steel 430": {
+        "mu_x": 600, "mu_y": 600, "H_c": 0, "J": 0, "Sigma": 1.7,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 7720, "note": "磁性不銹鋼"
+      }
+    },
+    "永磁材料 Permanent Magnets": {
+      "NdFeB N35 (釹鐵硼)": {
+        "mu_x": 1.05, "mu_y": 1.05, "H_c": 860000, "J": 0, "Sigma": 0.71,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 7500, "Br_T": 1.17,
+        "note": "Br=1.17T, Hc=860kA/m"
+      },
+      "NdFeB N42 (釹鐵硼)": {
+        "mu_x": 1.05, "mu_y": 1.05, "H_c": 915000, "J": 0, "Sigma": 0.71,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 7500, "Br_T": 1.30,
+        "note": "Br=1.30T, Hc=915kA/m"
+      },
+      "NdFeB N52 (釹鐵硼)": {
+        "mu_x": 1.05, "mu_y": 1.05, "H_c": 890000, "J": 0, "Sigma": 0.71,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 7500, "Br_T": 1.44,
+        "note": "Br=1.44T, Hc=890kA/m"
+      },
+      "SmCo Sm2Co17 (釤鈷)": {
+        "mu_x": 1.05, "mu_y": 1.05, "H_c": 730000, "J": 0, "Sigma": 1.1,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 8400, "Br_T": 1.08,
+        "note": "Br=1.08T, Hc=730kA/m, 高溫穩定"
+      },
+      "Ferrite Y30 (鐵氧體永磁)": {
+        "mu_x": 1.1, "mu_y": 1.1, "H_c": 240000, "J": 0, "Sigma": 1e-8,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 4900, "Br_T": 0.38,
+        "note": "Br=0.38T, Hc=240kA/m, 低成本"
+      },
+      "AlNiCo 5": {
+        "mu_x": 3.0, "mu_y": 3.0, "H_c": 50000, "J": 0, "Sigma": 2.0,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 7300, "Br_T": 1.27,
+        "note": "Br=1.27T, Hc=50kA/m, 高溫穩定"
+      }
+    },
+    "導體材料 Conductors": {
+      "Copper (銅 退火)": {
+        "mu_x": 1.0, "mu_y": 1.0, "H_c": 0, "J": 0, "Sigma": 58.0,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 8960, "note": "標準導體 IACS 100%"
+      },
+      "Copper (銅 硬拉)": {
+        "mu_x": 1.0, "mu_y": 1.0, "H_c": 0, "J": 0, "Sigma": 56.0,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 8960, "note": "硬銅線 IACS 97%"
+      },
+      "Aluminum 1100 (鋁)": {
+        "mu_x": 1.0, "mu_y": 1.0, "H_c": 0, "J": 0, "Sigma": 34.5,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 2710, "note": "純鋁導體"
+      },
+      "Aluminum 6061 (鋁合金)": {
+        "mu_x": 1.0, "mu_y": 1.0, "H_c": 0, "J": 0, "Sigma": 25.0,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 2700, "note": "鋁合金"
+      },
+      "Silver (銀)": {
+        "mu_x": 1.0, "mu_y": 1.0, "H_c": 0, "J": 0, "Sigma": 63.0,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 10490, "note": "導電率最高"
+      },
+      "Gold (金)": {
+        "mu_x": 1.0, "mu_y": 1.0, "H_c": 0, "J": 0, "Sigma": 41.0,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 19320, "note": "貴金屬導體"
+      },
+      "Brass (黃銅)": {
+        "mu_x": 1.0, "mu_y": 1.0, "H_c": 0, "J": 0, "Sigma": 15.0,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 8530, "note": "銅鋅合金"
+      },
+      "Bronze (磷青銅)": {
+        "mu_x": 1.0, "mu_y": 1.0, "H_c": 0, "J": 0, "Sigma": 10.0,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 8800, "note": "彈簧端子用"
+      },
+      "Tungsten (鎢)": {
+        "mu_x": 1.0, "mu_y": 1.0, "H_c": 0, "J": 0, "Sigma": 18.0,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 19300, "note": "高溫導體"
+      },
+      "Nichrome (鎳鉻合金)": {
+        "mu_x": 1.0, "mu_y": 1.0, "H_c": 0, "J": 0, "Sigma": 0.91,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 8400, "note": "電熱絲材料"
+      },
+      "Litz Wire (利茲線 44AWG×660)": {
+        "mu_x": 1.0, "mu_y": 1.0, "H_c": 0, "J": 0, "Sigma": 58.0,
+        "Lam_d": 0, "lam_fill": 0.3, "LamType": 5,
+        "NStrands": 660, "WireD": 0.0508,
+        "rho": 8960, "note": "利茲線 44AWG×660股 高頻繞線"
+      },
+      "Litz Wire (利茲線 38AWG×100)": {
+        "mu_x": 1.0, "mu_y": 1.0, "H_c": 0, "J": 0, "Sigma": 58.0,
+        "Lam_d": 0, "lam_fill": 0.3, "LamType": 5,
+        "NStrands": 100, "WireD": 0.1016,
+        "rho": 8960, "note": "利茲線 38AWG×100股"
+      },
+      "Magnet Wire 20AWG": {
+        "mu_x": 1.0, "mu_y": 1.0, "H_c": 0, "J": 0, "Sigma": 58.0,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 3,
+        "NStrands": 1, "WireD": 0.812,
+        "rho": 8960, "note": "漆包線 20AWG Ø0.812mm"
+      },
+      "Magnet Wire 26AWG": {
+        "mu_x": 1.0, "mu_y": 1.0, "H_c": 0, "J": 0, "Sigma": 58.0,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 3,
+        "NStrands": 1, "WireD": 0.405,
+        "rho": 8960, "note": "漆包線 26AWG Ø0.405mm"
+      },
+      "Magnet Wire 30AWG": {
+        "mu_x": 1.0, "mu_y": 1.0, "H_c": 0, "J": 0, "Sigma": 58.0,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 3,
+        "NStrands": 1, "WireD": 0.255,
+        "rho": 8960, "note": "漆包線 30AWG Ø0.255mm"
+      }
+    },
+    "絕緣/非磁性材料 Insulators": {
+      "Air (空氣)": {
+        "mu_x": 1.0, "mu_y": 1.0, "H_c": 0, "J": 0, "Sigma": 0,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 1.225, "note": "氣隙/邊界"
+      },
+      "Vacuum (真空)": {
+        "mu_x": 1.0, "mu_y": 1.0, "H_c": 0, "J": 0, "Sigma": 0,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 0, "note": "真空"
+      },
+      "FR-4 (PCB 基板)": {
+        "mu_x": 1.0, "mu_y": 1.0, "H_c": 0, "J": 0, "Sigma": 0,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 1850, "note": "PCB 絕緣基板, εr=4.5"
+      },
+      "Kapton (聚醯亞胺)": {
+        "mu_x": 1.0, "mu_y": 1.0, "H_c": 0, "J": 0, "Sigma": 0,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 1420, "note": "高溫絕緣膜"
+      },
+      "Epoxy (環氧樹脂)": {
+        "mu_x": 1.0, "mu_y": 1.0, "H_c": 0, "J": 0, "Sigma": 0,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 1200, "note": "灌封/絕緣"
+      },
+      "Mylar (PET)": {
+        "mu_x": 1.0, "mu_y": 1.0, "H_c": 0, "J": 0, "Sigma": 0,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 1390, "note": "絕緣膜"
+      },
+      "Teflon (PTFE)": {
+        "mu_x": 1.0, "mu_y": 1.0, "H_c": 0, "J": 0, "Sigma": 0,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 2200, "note": "高溫低介電絕緣"
+      },
+      "Nomex (芳綸紙)": {
+        "mu_x": 1.0, "mu_y": 1.0, "H_c": 0, "J": 0, "Sigma": 0,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 1100, "note": "變壓器絕緣紙"
+      },
+      "Transformer Oil (變壓器油)": {
+        "mu_x": 1.0, "mu_y": 1.0, "H_c": 0, "J": 0, "Sigma": 0,
+        "Lam_d": 0, "lam_fill": 1.0, "LamType": 0,
+        "rho": 880, "note": "絕緣冷卻油"
+      }
+    }
+  }
+}

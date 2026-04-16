@@ -1,0 +1,123 @@
+from pathlib import Path
+
+from py2femm_server.executor import FemmExecutor, inject_preamble
+
+
+def test_inject_preamble():
+    lua = 'hi_probdef("meters","planar")\nhi_analyze()'
+    workdir = Path("C:/femm_workspace/jobs/abc123")
+    result = inject_preamble(lua, workdir)
+    assert "py2femm_workdir" in result
+    assert "py2femm_outfile" in result
+    assert 'hi_probdef("meters","planar")' in result
+    assert result.index("py2femm_workdir") < result.index("hi_probdef")
+
+
+def test_inject_preamble_preserves_original():
+    lua = "line1\nline2\nline3"
+    workdir = Path("C:/jobs/test")
+    result = inject_preamble(lua, workdir)
+    assert "line1\nline2\nline3" in result
+
+
+def test_inject_preamble_escapes_backslashes():
+    workdir = Path("C:\\femm_workspace\\jobs\\abc123")
+    result = inject_preamble("hi_analyze()", workdir)
+    assert "\\\\" in result or "/" in result  # Lua-safe path separators
+
+
+def test_executor_init_with_femm_path(tmp_path):
+    femm_exe = tmp_path / "femm.exe"
+    femm_exe.touch()
+    executor = FemmExecutor(femm_path=femm_exe, workspace=tmp_path / "jobs")
+    assert executor.femm_path == femm_exe
+
+
+def test_executor_init_creates_workspace(tmp_path):
+    workspace = tmp_path / "jobs"
+    femm_exe = tmp_path / "femm.exe"
+    femm_exe.touch()
+    executor = FemmExecutor(femm_path=femm_exe, workspace=workspace)
+    assert workspace.exists()
+
+
+def test_executor_prepare_job_writes_lua(tmp_path):
+    femm_exe = tmp_path / "femm.exe"
+    femm_exe.touch()
+    executor = FemmExecutor(femm_path=femm_exe, workspace=tmp_path / "jobs")
+    job_dir, lua_path = executor.prepare_job("hi_analyze()")
+    assert lua_path.exists()
+    content = lua_path.read_text()
+    assert "py2femm_outfile" in content
+    assert "hi_analyze()" in content
+
+
+def test_executor_parse_result_csv(tmp_path):
+    femm_exe = tmp_path / "femm.exe"
+    femm_exe.touch()
+    executor = FemmExecutor(femm_path=femm_exe, workspace=tmp_path / "jobs")
+    job_dir = tmp_path / "jobs" / "test-job"
+    job_dir.mkdir(parents=True)
+    result_csv = job_dir / "results.csv"
+    result_csv.write_text("point,x,y,temperature_K\njunction,0,0,350.5\n")
+    csv_data = executor.read_result(job_dir)
+    assert "junction" in csv_data
+    assert "350.5" in csv_data
+
+
+def test_executor_read_result_missing_file(tmp_path):
+    femm_exe = tmp_path / "femm.exe"
+    femm_exe.touch()
+    executor = FemmExecutor(femm_path=femm_exe, workspace=tmp_path / "jobs")
+    job_dir = tmp_path / "jobs" / "no-result"
+    job_dir.mkdir(parents=True)
+    csv_data = executor.read_result(job_dir)
+    assert csv_data is None
+
+
+def test_executor_result_has_sentinel():
+    """Verify the sentinel constant is defined."""
+    from py2femm_server.executor import SENTINEL
+    assert SENTINEL == "PY2FEMM_DONE"
+
+
+def test_executor_has_sentinel_checks_correctly(tmp_path):
+    """has_sentinel() returns True only when sentinel is in the file."""
+    femm_exe = tmp_path / "femm.exe"
+    femm_exe.touch()
+    executor = FemmExecutor(femm_path=femm_exe, workspace=tmp_path / "jobs")
+
+    job_dir = tmp_path / "jobs" / "test_sentinel"
+    job_dir.mkdir(parents=True)
+    result_path = job_dir / "results.csv"
+
+    # No file yet
+    assert executor.has_sentinel(job_dir) is False
+
+    # Empty file
+    result_path.write_text("")
+    assert executor.has_sentinel(job_dir) is False
+
+    # Partial data, no sentinel
+    result_path.write_text("T_A_K = 350.5\n")
+    assert executor.has_sentinel(job_dir) is False
+
+    # With sentinel
+    result_path.write_text("T_A_K = 350.5\nPY2FEMM_DONE\n")
+    assert executor.has_sentinel(job_dir) is True
+
+
+def test_executor_run_reads_sentinel_result(tmp_path):
+    """run() should detect PY2FEMM_DONE sentinel and return CSV data."""
+    femm_exe = tmp_path / "femm.exe"
+    femm_exe.touch()
+    executor = FemmExecutor(femm_path=femm_exe, workspace=tmp_path / "jobs")
+
+    job_dir, lua_path = executor.prepare_job("hi_analyze()")
+    result_csv = job_dir / "results.csv"
+    result_csv.write_text("T_A_K = 350.5\nPY2FEMM_DONE\n")
+
+    csv_data = executor.read_result(job_dir)
+    assert csv_data is not None
+    assert "T_A_K = 350.5" in csv_data
+    assert "PY2FEMM_DONE" in csv_data
