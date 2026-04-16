@@ -116,9 +116,11 @@ class FemmBackend:
         if self._mode == "COM":
             self._pyfemm.opendocument(path)
 
-    def show_density_plot(self):
+    def show_density_plot(self, upper=None):
         if self._mode == "COM":
-            self._pyfemm.mo_showdensityplot(1, 0, 0.0, 1.0, "bmag")
+            # legend=1, grey=0, lower=0, upper=auto or given, type="bmag"
+            u = upper if upper else 0
+            self._pyfemm.mo_showdensityplot(1, 0, 0.0, u, "bmag")
 
     def get_point_values(self, x, y):
         if self._mode == "COM":
@@ -134,14 +136,16 @@ class FemmBackend:
         import numpy as np
         xs = np.linspace(xmin, xmax, nx)
         ys = np.linspace(ymin, ymax, ny)
-        B = np.zeros((ny, nx), dtype=float)
+        B = np.full((ny, nx), np.nan, dtype=float)
         for j, y_val in enumerate(ys):
             for i, x_val in enumerate(xs):
                 vals = self.get_point_values(float(x_val), float(y_val))
                 if vals and isinstance(vals, (list, tuple)) and len(vals) >= 3:
                     bx = abs(vals[1]) if isinstance(vals[1], complex) else vals[1]
                     by = abs(vals[2]) if isinstance(vals[2], complex) else vals[2]
-                    B[j, i] = (bx**2 + by**2)**0.5
+                    bmag = (bx**2 + by**2)**0.5
+                    if bmag > 0 or (bx == 0 and by == 0):
+                        B[j, i] = bmag
         return xs, ys, B
 
     # ---- Material modification ----

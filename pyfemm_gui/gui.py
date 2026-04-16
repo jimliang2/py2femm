@@ -110,18 +110,37 @@ class AnalyzeWorker(QThread):
 
 
 class SampleDialog(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, bounds=None):
         super().__init__(parent)
         self.setWindowTitle("取樣設定 Sampling Settings")
         self.setMinimumWidth(400)
         form = QFormLayout()
-        # FEMM model coordinates are in mm
-        self.xmin = QDoubleSpinBox(); self.xmin.setRange(-1000, 1000); self.xmin.setValue(-8); self.xmin.setDecimals(2); self.xmin.setSuffix(" mm")
-        self.xmax = QDoubleSpinBox(); self.xmax.setRange(-1000, 1000); self.xmax.setValue(16); self.xmax.setDecimals(2); self.xmax.setSuffix(" mm")
-        self.ymin = QDoubleSpinBox(); self.ymin.setRange(-1000, 1000); self.ymin.setValue(-6); self.ymin.setDecimals(2); self.ymin.setSuffix(" mm")
-        self.ymax = QDoubleSpinBox(); self.ymax.setRange(-1000, 1000); self.ymax.setValue(26); self.ymax.setDecimals(2); self.ymax.setSuffix(" mm")
-        self.nx = QSpinBox(); self.nx.setRange(4, 2000); self.nx.setValue(200)
-        self.ny = QSpinBox(); self.ny.setRange(4, 2000); self.ny.setValue(200)
+        # Auto-detect bounds from model if available
+        if bounds:
+            margin = max(bounds[2] - bounds[0], bounds[3] - bounds[1]) * 0.05
+            xmin_v = bounds[0] - margin
+            xmax_v = bounds[2] + margin
+            ymin_v = bounds[1] - margin
+            ymax_v = bounds[3] + margin
+        else:
+            xmin_v, xmax_v, ymin_v, ymax_v = -8, 16, -6, 26
+        self.xmin = QDoubleSpinBox(); self.xmin.setRange(-10000, 10000); self.xmin.setValue(xmin_v); self.xmin.setDecimals(2); self.xmin.setSuffix(" mm")
+        self.xmax = QDoubleSpinBox(); self.xmax.setRange(-10000, 10000); self.xmax.setValue(xmax_v); self.xmax.setDecimals(2); self.xmax.setSuffix(" mm")
+        self.ymin = QDoubleSpinBox(); self.ymin.setRange(-10000, 10000); self.ymin.setValue(ymin_v); self.ymin.setDecimals(2); self.ymin.setSuffix(" mm")
+        self.ymax = QDoubleSpinBox(); self.ymax.setRange(-10000, 10000); self.ymax.setValue(ymax_v); self.ymax.setDecimals(2); self.ymax.setSuffix(" mm")
+        # Scale resolution to model aspect ratio
+        dx = xmax_v - xmin_v
+        dy = ymax_v - ymin_v
+        if dy > dx and dx > 0:
+            nx_v = 200
+            ny_v = max(4, int(200 * dy / dx))
+        elif dx > dy and dy > 0:
+            ny_v = 200
+            nx_v = max(4, int(200 * dx / dy))
+        else:
+            nx_v = ny_v = 200
+        self.nx = QSpinBox(); self.nx.setRange(4, 2000); self.nx.setValue(nx_v)
+        self.ny = QSpinBox(); self.ny.setRange(4, 2000); self.ny.setValue(ny_v)
         form.addRow("X 最小值 X min:", self.xmin)
         form.addRow("X 最大值 X max:", self.xmax)
         form.addRow("Y 最小值 Y min:", self.ymin)
@@ -831,6 +850,8 @@ class MainWindow(QMainWindow):
         QApplication.processEvents()
         try:
             info = self.backend.generate_transformer(params)
+            # Store model bounds for density plot auto-range
+            self._model_bounds = (0, 0, info['total_w'], info['total_h'])
             self._tr_fem.setText(1, os.path.basename(params["save_path"]))
             lines = []
             lines.append("=" * 50)
@@ -929,13 +950,15 @@ class MainWindow(QMainWindow):
     def _sample_and_show_inline(self):
         """取樣並在 APP 內顯示密度圖  Sample and display density inline."""
         if not self._need_conn(): return
-        dlg = SampleDialog(self)
+        bounds = getattr(self, '_model_bounds', None)
+        dlg = SampleDialog(self, bounds=bounds)
         if dlg.exec() != QDialog.Accepted: return
         self._do_density_sample(dlg, save_path=None)
 
     def sample_and_export(self):
         if not self._need_conn(): return
-        dlg = SampleDialog(self)
+        bounds = getattr(self, '_model_bounds', None)
+        dlg = SampleDialog(self, bounds=bounds)
         if dlg.exec() != QDialog.Accepted: return
         sp, _ = QFileDialog.getSaveFileName(
             self, "儲存 PNG  Save PNG", "field_plot.png", "PNG (*.png)")
@@ -967,18 +990,35 @@ class MainWindow(QMainWindow):
                 dlg.nx.value(), dlg.ny.value())
             X, Y = np.meshgrid(xs, ys)
 
-            fig, ax = plt.subplots(figsize=(8, 6))
-            cf = ax.contourf(X, Y, B, levels=60, cmap="jet")
+            # Mask out-of-model points (NaN) for clean rendering
+            Bmasked = np.ma.array(B, mask=np.isnan(B))
+
+            # Auto-size figure to match model aspect ratio
+            dx = dlg.xmax.value() - dlg.xmin.value()
+            dy = dlg.ymax.value() - dlg.ymin.value()
+            ratio = dy / dx if dx > 0 else 1.0
+            fw = 8; fh = max(4, min(14, fw * ratio + 1.2))
+            fig, ax = plt.subplots(figsize=(fw, fh))
+            # Use pcolormesh for pixel-accurate rendering (like FEMM)
+            cf = ax.pcolormesh(X, Y, Bmasked, cmap="jet", shading="gouraud")
             fig.colorbar(cf, ax=ax, label="|B| (T)")
 
             # ---- 繪製模型幾何輪廓 Draw geometry outlines ----
             try:
                 points, segments = self.backend.get_geometry_segments()
+                xlo, xhi = dlg.xmin.value(), dlg.xmax.value()
+                ylo, yhi = dlg.ymin.value(), dlg.ymax.value()
                 if points and segments:
                     for s0, s1 in segments:
                         if s0 < len(points) and s1 < len(points):
                             x0, y0 = points[s0]
                             x1, y1 = points[s1]
+                            # Skip segments outside the sampling range
+                            # (e.g. huge outer air boundary box)
+                            if (x0 < xlo and x1 < xlo) or (x0 > xhi and x1 > xhi):
+                                continue
+                            if (y0 < ylo and y1 < ylo) or (y0 > yhi and y1 > yhi):
+                                continue
                             ax.plot([x0, x1], [y0, y1], color="white",
                                     linewidth=0.8, alpha=0.85)
             except Exception:
@@ -987,6 +1027,7 @@ class MainWindow(QMainWindow):
             ax.set_xlabel("x (mm)"); ax.set_ylabel("y (mm)")
             ax.set_title("磁通密度分佈 Magnetic Flux Density |B|")
             ax.set_aspect("equal")
+            ax.set_facecolor("#f0f0f0")  # grey background for out-of-model
             fig.tight_layout()
 
             # ---- 匯出檔案 Save to file (optional) ----
@@ -1005,11 +1046,12 @@ class MainWindow(QMainWindow):
             self.density_view.set_pixmap(self._density_pixmap_full)
 
             # ---- 分析統計報告 Analysis statistics report ----
-            bmax = float(B.max())
-            bmin = float(B.min())
-            bmean = float(B.mean())
-            bmean_nz = float(B[B > 0].mean()) if (B > 0).any() else 0.0
-            bstd = float(B.std())
+            Bvalid = B[~np.isnan(B)]
+            bmax = float(Bvalid.max()) if len(Bvalid) else 0.0
+            bmin = float(Bvalid.min()) if len(Bvalid) else 0.0
+            bmean = float(Bvalid.mean()) if len(Bvalid) else 0.0
+            bmean_nz = float(Bvalid[Bvalid > 0].mean()) if (Bvalid > 0).any() else 0.0
+            bstd = float(Bvalid.std()) if len(Bvalid) else 0.0
             nx, ny = dlg.nx.value(), dlg.ny.value()
 
             lines = []
